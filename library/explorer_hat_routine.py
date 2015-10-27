@@ -9,7 +9,7 @@ from itertools import cycle, islice
 #    @param start_of_cycle_interruptor is called each time we start a cycle
 #    @param rate at which we move to the next LED in seconds
 #    @param fade_out time in seconds
-def startup(cycle_interruptor = lambda : None, start_of_cycle_interruptor = lambda : None, rate=0.1, fade_out=0.2):
+def startup(cycle_interruptor = (lambda ticks, cycles : None), rate=0.1, fade_out=0.2):
 
     lights = [exp.light.blue, exp.light.yellow, exp.light.red, exp.light.green]
 
@@ -17,14 +17,16 @@ def startup(cycle_interruptor = lambda : None, start_of_cycle_interruptor = lamb
 
     serie = [item for sublist in [passes[0]] + map(lambda p : p[1:], passes[1:]) for item in sublist]
 
+    ticks = 0
+    cycles = 0
+
     def _cycler():
-        if start_of_cycle_interruptor():
-            exp.light.off()
-            return False
+        cycle += 1
         for s in serie:
+            ticks += 1
             s.fade(100,0,fade_out)
             sleep(rate)
-            if cycle_interruptor():
+            if cycle_interruptor(ticks, cycle):
                 exp.light.off()
                 return False
 
