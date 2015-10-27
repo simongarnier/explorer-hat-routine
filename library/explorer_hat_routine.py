@@ -21,6 +21,9 @@ def startup(cycle_interruptor = (lambda ticks, cycles : None), rate=0.1, fade_ou
     cycles = 0
 
     def _cycler():
+        global ticks
+        global cycles
+        
         cycle += 1
         for s in serie:
             ticks += 1
